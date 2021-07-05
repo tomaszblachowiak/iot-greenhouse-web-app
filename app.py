@@ -1,89 +1,70 @@
-from flask import Flask, render_template
+import justpy as jp
 
 chart_def = """
 {
     chart: {
-        type: 'spline'
+        type: 'spline',
+        inverted: true
     },
     title: {
-        text: 'Monthly Average Temperature'
+        text: 'Atmosphere Temperature by Altitude'
     },
     subtitle: {
-        text: 'Source: WorldClimate.com'
+        text: 'According to the Standard Atmosphere Model'
     },
     xAxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        reversed: false,
+        title: {
+            enabled: true,
+            text: 'Altitude'
+        },
+        labels: {
+            format: '{value} km'
+        },
+        accessibility: {
+            rangeDescription: 'Range: 0 to 80 km.'
+        },
+        maxPadding: 0.05,
+        showLastLabel: true
     },
     yAxis: {
         title: {
             text: 'Temperature'
         },
         labels: {
-            formatter: function () {
-                return this.value + '°';
-            }
-        }
+            format: '{value}°'
+        },
+        accessibility: {
+            rangeDescription: 'Range: -90°C to 20°C.'
+        },
+        lineWidth: 2
+    },
+    legend: {
+        enabled: false
     },
     tooltip: {
-        crosshairs: true,
-        shared: true
+        headerFormat: '<b>{series.name}</b><br/>',
+        pointFormat: '{point.x} km: {point.y}°C'
     },
     plotOptions: {
         spline: {
             marker: {
-                radius: 4,
-                lineColor: '#666666',
-                lineWidth: 1
+                enable: false
             }
         }
     },
     series: [{
-        name: 'Tokyo',
-        marker: {
-            symbol: 'square'
-        },
-        data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, {
-            y: 26.5,
-            marker: {
-                symbol: 'url(https://www.highcharts.com/samples/graphics/sun.png)'
-            }
-        }, 23.3, 18.3, 13.9, 9.6]
-
-    }, {
-        name: 'London',
-        marker: {
-            symbol: 'diamond'
-        },
-        data: [{
-            y: 3.9,
-            marker: {
-                symbol: 'url(https://www.highcharts.com/samples/graphics/snow.png)'
-            }
-        }, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+        name: 'Temperature1',
+        data: [[0, 15], [10, -50], [20, -56.5], [30, -46.5], [40, -22.1],
+            [50, -2.5], [60, -27.7], [70, -55.7], [80, -76.5]]
+    },
+    {
+        name: 'Temperature2',
+        data: [[4, 25], [7, -30], [10, -26.5], [20, -26.5], [30, -12.1],
+            [44, -2.5], [60, -27.7], [70, -55.7], [80, -71.5]]
     }]
 }
 """
-
-app=Flask(__name__)
-
-@app.route('/')
-def home():
-    return render_template("home.html")
-
-@app.route('/charts/')
-def charts():
-    return render_template("charts.html")
-
-@app.route('/howitworks/')
-def howitworks():
-    return "How it works page."
-
-if __name__=="__main__":
-    app.run(debug=True)
-
-
-import justpy as jp
 
 def app():
     wp = jp.QuasarPage()
@@ -91,4 +72,7 @@ def app():
     p1 = jp.QDiv(a=wp, text="decription of the web page")
     hc = jp.HighCharts(a=wp, options=chart_def)
     return wp
+
+
+
 jp.justpy(app)

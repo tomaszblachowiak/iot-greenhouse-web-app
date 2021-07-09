@@ -1,6 +1,8 @@
 from flask import Flask, render_template
 import json
 from urllib.request import urlopen
+from datetime import datetime
+
 
 app=Flask(__name__)
 
@@ -9,10 +11,12 @@ def home():
     response = urlopen('https://hydropoinc-greenhouse-api.azurewebsites.net/api/readings/GetAllReadings?')
     data_json = json.loads(response.read())
     temperature1 = [d["temperature1"] for d in data_json if "temperature1" in d]
-    ts = [d['_ts'] for d in data_json if '_ts' in d]
-    print(temperature1)
-    print(ts)
-    return render_template("home.html", temperature1 = temperature1, ts = ts)
+    temperature2 = [d["temperature2"] for d in data_json if "temperature2" in d]
+    temperature3 = [float(d["temperature1"])-2.0 for d in data_json if "temperature1" in d]
+    ts = [datetime.fromtimestamp(int(d['_ts'])).isoformat(timespec='minutes') for d in data_json if '_ts' in d]
+    #print(temperature1)
+    #print(ts)
+    return render_template("home.html", temperature1 = temperature1, temperature2 = temperature2, temperature3 = temperature3, ts = ts)
 
 @app.route('/charts/')
 def charts():
